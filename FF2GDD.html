@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDD - Finding Fern 2 (Dark Mode)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b5cf6; /* Vibrant Violet */
+            --bg-main: #0f172a; /* Slate 900 */
+            --bg-card: #1e293b; /* Slate 800 */
+            --accent: #fbbf24; /* Amber/Gold */
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            scroll-behavior: smooth;
+        }
+        .serif { font-family: 'Crimson Pro', serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .sidebar-link.active {
+            border-left: 4px solid var(--primary);
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .card:hover { border-color: #475569; }
+        
+        .section-heading {
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .asset-tag {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #c4b5fd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .content-block p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<div class="min-h-screen flex flex-col md:flex-row">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar w-full md:w-72 bg-[#0a0f1d] border-r border-slate-800 p-6 flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="text-2xl font-bold serif text-purple-400 tracking-tight">Finding Fern 2</h1>
+            <div class="mt-2 flex items-center gap-2 justify-center md:justify-start">
+                <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                <span class="text-[10px] text-slate-500 uppercase tracking-[0.2em]">Live GDD</span>
+            </div>
+        </div>
+        
+        <div class="space-y-1">
+            <p class="text-[10px] font-bold text-slate-600 uppercase mb-2 px-3 tracking-widest">High Level</p>
+            <a href="#overview" class="sidebar-link block px-3 py-2 text-sm text-slate-400 rounded-lg hover:text-white transition">Executive Summary</a>
+            <a href="#detailed-mechanics" class="sidebar-link block px-3 py-2 text-sm text-slate-400 rounded-lg hover:text-white transition">Core Mechanics</a>
+            
+            <p class="text-[10px] font-bold text-slate-600 uppercase mt-6 mb-2 px-3 tracking-widest">Narrative</p>
+            <a href="#story-detailed" class="sidebar-link block px-3 py-2 text-sm text-slate-400 rounded-lg hover:text-white transition">Story & Gameplay</a>
+            
+            <p class="text-[10px] font-bold text-slate-600 uppercase mt-6 mb-2 px-3 tracking-widest">Production</p>
+            <a href="#assets" class="sidebar-link block px-3 py-2 text-sm text-slate-400 rounded-lg hover:text-white transition">Assets & Requirements</a>
+            <a href="#schedule" class="sidebar-link block px-3 py-2 text-sm text-slate-400 rounded-lg hover:text-white transition">Schedule & Milestones</a>
+            <a href="#scope" class="sidebar-link block px-3 py-2 text-sm text-slate-400 rounded-lg hover:text-white transition">Team & Monetization</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-16 max-w-6xl mx-auto w-full">
+        
+        <!-- Header Info Card -->
+        <header id="overview" class="mb-20 scroll-mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="inline-block px-3 py-1 bg-purple-500/10 text-purple-400 text-[10px] font-bold rounded mb-4 border border-purple-500/20">PROJECT OVERVIEW</div>
+                    <h2 class="text-6xl font-bold serif text-white mb-6">Finding Fern 2</h2>
+                    <p class="text-xl text-slate-400 serif italic leading-relaxed max-w-2xl">
+                        A 3rd Person Action RPG focused on 4 Witch Sisters, a cat named Momo, and a young boy from the modern world navigating a fantastical realm.
+                    </p>
+                </div>
+                <div class="card p-6 border-amber-500/20 bg-amber-500/5">
+                    <h3 class="text-amber-500 text-xs font-bold uppercase tracking-widest mb-4">Project Vital Signs</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Theme</span>
+                            <span class="text-white">Fantasy / Medieval</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Platform</span>
+                            <span class="text-white">Windows / Steam Deck</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Time Scale</span>
+                            <span class="text-white">3 Years</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-500">Status</span>
+                            <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-[10px] font-bold rounded">PRE-PRODUCTION</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What sets it apart -->
+            <div class="mt-12 grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="text-center p-3 card bg-slate-800/30">
+                    <p class="text-[10px] text-purple-400 font-bold uppercase">Unique Story</p>
+                </div>
+                <div class="text-center p-3 card bg-slate-800/30">
+                    <p class="text-[10px] text-purple-400 font-bold uppercase">Cute Witch Theme</p>
+                </div>
+                <div class="text-center p-3 card bg-slate-800/30">
+                    <p class="text-[10px] text-purple-400 font-bold uppercase">Multi-Party</p>
+                </div>
+                <div class="text-center p-3 card bg-slate-800/30">
+                    <p class="text-[10px] text-purple-400 font-bold uppercase">Unique Progression</p>
+                </div>
+                <div class="text-center p-3 card bg-slate-800/30">
+                    <p class="text-[10px] text-purple-400 font-bold uppercase">Interwoven Story</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Detailed Mechanics Section -->
+        <section id="detailed-mechanics" class="mb-24 scroll-mt-20">
+            <div class="section-heading">
+                <h2 class="text-3xl font-bold serif text-white">Core Gameplay Mechanics (Detailed)</h2>
+            </div>
+
+            <div class="space-y-16">
+                <!-- Mechanic 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="md:col-span-1">
+                        <h3 class="text-purple-400 font-bold uppercase tracking-tighter text-lg">Complex Party System</h3>
+                    </div>
+                    <div class="md:col-span-3 space-y-4">
+                        <div class="card p-6 bg-slate-800/40">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">Details</h4>
+                            <p class="text-slate-300">A complex system that both encompasses the layering having multiple parties and multiple party members in each party. Playing each Party at different times during the game.</p>
+                        </div>
+                        <div class="card p-6 border-dashed border-slate-700">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">How it Works</h4>
+                            <p class="text-slate-300">The player can switch between characters in their current party on the fly, allowing them to change tactics quickly and choose the characters that best fit their play-style. As the player progresses through the game they will play various different parties depending on the current state of the game. At the most there will be 4 Seperate parties: Coby (Wiz Kid), Fern, Momo, and The Sisters (Skye, Brooke, Ember). While eventually Fern, Momo, and Coby will be in the same party.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mechanic 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="md:col-span-1">
+                        <h3 class="text-purple-400 font-bold uppercase tracking-tighter text-lg">Combat Engine</h3>
+                    </div>
+                    <div class="md:col-span-3 space-y-4">
+                        <div class="card p-6 bg-slate-800/40">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">Details</h4>
+                            <p class="text-slate-300">Complex Melee and Spell Casting combat with unique effects and advantages to each different type of attack. The enemies will also have similar mechanics and complex interactions based on the state of the game. As well as boss fights with stage mechanics.</p>
+                        </div>
+                        <div class="card p-6 border-dashed border-slate-700">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">How it Works</h4>
+                            <p class="text-slate-300">The Player will be able to learn and equip abilities and attacks, having a limited number of equipped abilities at any given time, allowing the player to customize each character's play-style. The enemies will range from simple melee combat, to complex scripted boss fights with multiple mechanics, that sometimes includes using the environment for tactical advantage.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mechanic 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="md:col-span-1">
+                        <h3 class="text-purple-400 font-bold uppercase tracking-tighter text-lg">Perk & Progression</h3>
+                    </div>
+                    <div class="md:col-span-3 space-y-4">
+                        <div class="card p-6 bg-slate-800/40">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">Details</h4>
+                            <p class="text-slate-300">The Player will acquire upgrade points via performing certain actions like defeating enemies, completing quests, exploring, crafting, etc. They can spend these points to improve and customize their characters.</p>
+                        </div>
+                        <div class="card p-6 border-dashed border-slate-700">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">How it Works</h4>
+                            <p class="text-slate-300">After obtaining enough upgrade points the player will be to spend their points on either Perks, or improving their abilities. Perks improve the players stats, vitals, or grant new abilities. Each character will be able to learn new abilities from training or Spell Books that can be upgraded X number of times.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mechanic 4 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="md:col-span-1">
+                        <h3 class="text-purple-400 font-bold uppercase tracking-tighter text-lg">World Map Hub</h3>
+                    </div>
+                    <div class="md:col-span-3 space-y-4">
+                        <div class="card p-6 bg-slate-800/40">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">Details</h4>
+                            <p class="text-slate-300">The World Map will act as the Travel Hub for the player. When leaving a zone they will come to a transition that will offer to open the world map for traveling. The World Map will consist of two major continents: The Old World and The New World.</p>
+                        </div>
+                        <div class="card p-6 border-dashed border-slate-700">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-3 italic tracking-widest">How it Works</h4>
+                            <p class="text-slate-300">The World Map will contain many nodes the player can unlock and travel to. After a node is unlocked it will appear on the map as a new location. Some areas the player will be able to return to, while others will be disabled once the player completes the area. During Travel on the world map, there will be certain areas that can trigger Random Encounters, pulling the player out into a small Encounter Area with additional enemies or NPCs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Story Detailed -->
+        <section id="story-gameplay" class="mb-24 scroll-mt-20">
+            <div class="section-heading">
+                <h2 class="text-3xl font-bold serif text-white">Story and Gameplay</h2>
+            </div>
+
+            <div class="space-y-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card p-8 bg-indigo-900/20 border-indigo-500/30">
+                        <h3 class="text-xl font-bold text-indigo-400 mb-4">Story (Brief)</h3>
+                        <p class="text-slate-300 leading-relaxed">Finding Fern 2 is about 4 Witch Sisters, their Cat Momo, and a young boy from another realm named Coby. Their journeys will intertwine into a complex story of adventure, mystery, and intrigue.</p>
+                    </div>
+                    <div class="card p-8 bg-purple-900/20 border-purple-500/30">
+                        <h3 class="text-xl font-bold text-purple-400 mb-4">Gameplay (Brief)</h3>
+                        <p class="text-slate-300 leading-relaxed">The core gameplay loop consists of the Player progressing the story, completing quests, defeating enemies, dialogue, and upgrading their characters through Perks, Abilities, Equipment, and Crafting.</p>
+                    </div>
+                </div>
+
+                <div class="card p-8 content-block">
+                    <h3 class="text-2xl font-bold serif text-white mb-6 border-b border-slate-700 pb-2">Narrative Arc (Detailed)</h3>
+                    <div class="text-slate-300 space-y-4">
+                        <p>The Game will begin with Coby in the modern world, a normal young boy interested in the fantastical. During the start, Coby’s mother reads him a bedtime story about the world of Finding Fern. The next day Coby wakes up in Fern’s world, confused, where he encounters helpful NPCs.</p>
+                        <p>The story then moves to Fern trying to get Momo back. She discovers a Dark Portal may exist in The New World and runs away again, seeking passage with help from her old friend Eva. Meanwhile, Skye, Brook, and Ember discover Fern is missing and head to the capital city Beacon to charter a boat to the New World.</p>
+                        <p>Fern encounters Coby in the New World. Coby joins her search for Momo. The game then switches to Momo in the Dark World, where he defeats the current Dark Lord and becomes <strong>Dark Lord Momo</strong>. Back in the New World, the sisters run into trouble with the Inquisition—a group enforcing magical law.</p>
+                        <p>The Dark Cult eventually helps Fern and Coby bring Momo back from the Dark World, believing him to be the new Dark Lord. After reuniting, they are all detained by the Inquisition and forced to join the Academy of Magical Arts. Disliking the Academy, Fern and Coby decide to run away, opening the game up for <em>Finding Fern 3</em>.</p>
+                    </div>
+                </div>
+
+                <div class="card p-8 content-block bg-slate-800/20">
+                    <h3 class="text-2xl font-bold serif text-white mb-6 border-b border-slate-700 pb-2">Gameplay (Detailed)</h3>
+                    <p class="text-slate-300">The Gameplay focuses heavily on Combat as an Action RPG with character dialogue and questing as a secondary mechanic. The player will defeat enemies, fight bosses, and solve puzzles using their abilities and magic. They will be directed towards the main storyline using questing and dialogue from NPCs and inter-character conversations.</p>
+                    <p class="text-slate-300">As the player progresses they will unlock new areas they will be able to travel to via the World Map. Certain milestones and chapters the player achieves may lock previous areas of the game. The play will need to spend their Upgrade Points wisely to improve their characters and be able to defeat stronger enemies. The main goal of the game is to complete the core storyline while staying immersed in fast-paced action combat.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Influences -->
+        <section id="influences" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold serif text-white mb-8">Influences</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card p-6 flex gap-4">
+                    <div class="w-12 h-12 bg-indigo-500/20 rounded flex items-center justify-center font-bold text-indigo-400">KS</div>
+                    <div>
+                        <h4 class="font-bold">Kiki’s Delivery Service</h4>
+                        <p class="text-xs text-slate-500 italic">Young witch theme with a cat familiar inspiration.</p>
+                    </div>
+                </div>
+                <div class="card p-6 flex gap-4">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded flex items-center justify-center font-bold text-purple-400">NW</div>
+                    <div>
+                        <h4 class="font-bold">Neverwinter Nights</h4>
+                        <p class="text-xs text-slate-500 italic">Story-Driven RPG with a dynamic party swap system.</p>
+                    </div>
+                </div>
+                <div class="card p-6 flex gap-4">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded flex items-center justify-center font-bold text-blue-400">KO</div>
+                    <div>
+                        <h4 class="font-bold">KOTOR</h4>
+                        <p class="text-xs text-slate-500 italic">Complex party system and cinematic story progression.</p>
+                    </div>
+                </div>
+                <div class="card p-6 flex gap-4">
+                    <div class="w-12 h-12 bg-green-500/20 rounded flex items-center justify-center font-bold text-green-400">BT</div>
+                    <div>
+                        <h4 class="font-bold">Breath Of The Wild</h4>
+                        <p class="text-xs text-slate-500 italic">Stylized art style and environmental storytelling.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assets Needed -->
+        <section id="assets" class="mb-24 scroll-mt-20">
+            <div class="section-heading">
+                <h2 class="text-3xl font-bold serif text-white">Assets Needed</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Art/3D -->
+                <div class="space-y-6">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-purple-400 mb-4 border-b border-slate-700 pb-2">Visual Assets (2D/3D)</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="text-[10px] font-bold text-slate-500 uppercase mb-2">2D Textures</h5>
+                                <p class="text-xs text-slate-300">Grass, Rock, Dirt, Mud, Sand, Gravel, Cobblestone. Tileable: Wood/Tile Flooring, Brick, Glass, Metal.</p>
+                            </div>
+                            <div>
+                                <h5 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Character Models</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 bg-slate-700 rounded text-xs text-white">Skye</span>
+                                    <span class="px-2 py-1 bg-slate-700 rounded text-xs text-white">Ember</span>
+                                    <span class="px-2 py-1 bg-slate-700 rounded text-xs text-white">Brook</span>
+                                    <span class="px-2 py-1 bg-slate-700 rounded text-xs text-white">Fern</span>
+                                    <span class="px-2 py-1 bg-slate-700 rounded text-xs text-white">Momo</span>
+                                    <span class="px-2 py-1 bg-slate-700 rounded text-xs text-white">Coby</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Environment Art</h5>
+                                <p class="text-xs text-slate-400">Birch/Pine Trees, Cliffs/Boulders, Foliage/Flowers, Ruins/Buildings, Prop Containers.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-6">
+                        <h3 class="font-bold text-purple-400 mb-4 border-b border-slate-700 pb-2">Animation</h3>
+                        <div class="grid grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <h5 class="text-slate-500 uppercase mb-2">Environment</h5>
+                                <ul class="text-slate-400">
+                                    <li>Water Flows</li>
+                                    <li>Foliage Sway</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="text-slate-500 uppercase mb-2">Character</h5>
+                                <ul class="text-slate-400">
+                                    <li>Locomotion Sets</li>
+                                    <li>Utility/Combat</li>
+                                    <li>NPC Job Idles</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code / Sound -->
+                <div class="space-y-6">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-purple-400 mb-4 border-b border-slate-700 pb-2">Code Architecture</h3>
+                        <div class="max-h-64 overflow-y-auto space-y-2 pr-2">
+                            <div class="p-2 bg-slate-900/50 rounded text-[11px] font-mono border border-slate-700">
+                                <span class="text-blue-400">Core:</span> PlayerController, PlayerManager, Camera, AllyAI
+                            </div>
+                            <div class="p-2 bg-slate-900/50 rounded text-[11px] font-mono border border-slate-700">
+                                <span class="text-blue-400">Systems:</span> Perk, Ability, Transition, Dialog, Save
+                            </div>
+                            <div class="p-2 bg-slate-900/50 rounded text-[11px] font-mono border border-slate-700">
+                                <span class="text-blue-400">UI:</span> Inventory, PotionBrewing, WorldMap, TarotMenu
+                            </div>
+                            <div class="p-2 bg-slate-900/50 rounded text-[11px] font-mono border border-slate-700">
+                                <span class="text-blue-400">Data:</span> Item, Quest, Dialogue, MapNode Data
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-6">
+                        <h3 class="font-bold text-purple-400 mb-4 border-b border-slate-700 pb-2">Sound & Foley</h3>
+                        <div class="space-y-3 text-xs text-slate-400">
+                            <div>
+                                <span class="text-slate-200">Ambient:</span> Wind/Wildlife Loops, City Backgrounds, Cave Loops.
+                            </div>
+                            <div>
+                                <span class="text-slate-200">Combat:</span> Material/Body Impacts, Block Sounds, Spells.
+                            </div>
+                            <div>
+                                <span class="text-slate-200">Vocals:</span> Character Hit/Hurt, Death Foley.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule -->
+        <section id="schedule" class="mb-24 scroll-mt-20">
+            <div class="section-heading">
+                <h2 class="text-3xl font-bold serif text-white">Development Schedule</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6 border-l-4 border-indigo-500">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-white">Phase 1: Blockout</h4>
+                        <span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded">3 MONTHS</span>
+                    </div>
+                    <ul class="text-xs text-slate-400 space-y-1">
+                        <li>• Basic Environment Assets (Trees, Rocks)</li>
+                        <li>• Core Party Modeled (Sisters, Momo, Coby)</li>
+                        <li>• Core Scripts (Controller, Manager)</li>
+                        <li>• First Enemy Encounter Working</li>
+                    </ul>
+                </div>
+
+                <div class="card p-6 border-l-4 border-purple-500">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-white">Phase 2: Vertical Slice</h4>
+                        <span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-1 rounded">6 MONTHS</span>
+                    </div>
+                    <ul class="text-xs text-slate-400 space-y-1">
+                        <li>• All Playable Characters Functional</li>
+                        <li>• 10+ Unique Enemy Types</li>
+                        <li>• Multiple Polished Levels</li>
+                        <li>• 2 Full Story Scenes Playable</li>
+                    </ul>
+                </div>
+
+                <div class="card p-6 border-l-4 border-blue-500">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-white">Phase 3: Demo</h4>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded">1 YEAR</span>
+                    </div>
+                    <ul class="text-xs text-slate-400 space-y-1">
+                        <li>• Environment & Enemy Art 90% Complete</li>
+                        <li>• 30% of Total Levels Playable</li>
+                        <li>• Core Game Progression Implemented</li>
+                    </ul>
+                </div>
+
+                <div class="card p-6 border-l-4 border-green-500">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-white">Phase 4: Alpha & Prelaunch</h4>
+                        <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded">2 - 2.5 YEARS</span>
+                    </div>
+                    <ul class="text-xs text-slate-400 space-y-1">
+                        <li>• All Levels & Art Finished</li>
+                        <li>• Steam Prelaunch Setup</li>
+                        <li>• Launch Trailer & Date Announced</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team & Scope -->
+        <section id="scope" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold serif text-white mb-8">Team & Monetization</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Team -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Core Team</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 card bg-slate-800/30">
+                            <div>
+                                <p class="font-bold">Robin</p>
+                                <p class="text-[10px] text-purple-400">Prog / Gameplay / Level Design</p>
+                            </div>
+                            <p class="text-xs font-mono text-slate-500">$0 (Founder)</p>
+                        </div>
+                        <div class="flex justify-between items-center p-4 card bg-slate-800/30">
+                            <div>
+                                <p class="font-bold">Kenn / Daha</p>
+                                <p class="text-[10px] text-purple-400">Art (Character / Environment)</p>
+                            </div>
+                            <p class="text-xs font-mono text-amber-500">TBD</p>
+                        </div>
+                        <div class="flex justify-between items-center p-4 card bg-blue-500/5 border-blue-500/20">
+                            <div>
+                                <p class="font-bold">Marketing Team</p>
+                                <p class="text-[10px] text-blue-400 uppercase">TBD Roles</p>
+                            </div>
+                            <p class="text-xs font-mono text-blue-400">Hiring...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Business Model</h3>
+                    <div class="card p-6 space-y-4">
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded bg-amber-500/20 flex items-center justify-center font-bold text-amber-400 text-xs">$</div>
+                            <div>
+                                <h4 class="text-sm font-bold">Sales Channels</h4>
+                                <p class="text-xs text-slate-400">Primary revenue from Steam and Epic Game Store copy sales.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center font-bold text-purple-400 text-xs">+</div>
+                            <div>
+                                <h4 class="text-sm font-bold">Post-Launch</h4>
+                                <p class="text-xs text-slate-400">Planned Story-based DLCs to expand characters and lore.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="border-t border-slate-800 pt-10 pb-20 flex flex-col md:flex-row justify-between items-center text-slate-500 text-[10px] uppercase tracking-[0.3em] gap-4">
+            <p>© Finding Fern Project | 2024-2027</p>
+            <div class="flex gap-6">
+                <span>V2.5 MASTER</span>
+                <span>INTERNAL USE ONLY</span>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // Intersection Observer for active nav
+    const sections = document.querySelectorAll('section, header');
+    const navLinks = document.querySelectorAll('.sidebar-link');
+
+    const options = { threshold: 0.2 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, options);
+
+    sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>

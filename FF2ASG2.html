@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finding Fern 2 - Art Style Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rpg-primary: #8b5cf6;
+            --rpg-accent: #10b981;
+            --rpg-ui: #f59e0b;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+        }
+        
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--card-bg);
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+            z-index: 40;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 3rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1.5rem;
+            color: #94a3b8;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            background: #334155;
+            color: var(--rpg-primary);
+        }
+
+        .nav-link.active {
+            background: #2e1065;
+            color: #ddd6fe;
+            border-left-color: var(--rpg-primary);
+            font-weight: 600;
+        }
+
+        .nav-group-label {
+            padding: 1.5rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #475569;
+            letter-spacing: 0.1em;
+        }
+
+        /* Thumbnail Logic */
+        .asset-image-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #0f172a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px dashed #475569;
+            margin-bottom: 0.5rem;
+            position: relative;
+            cursor: zoom-in;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .asset-image-container:hover {
+            transform: scale(1.02);
+            border-color: var(--rpg-primary);
+        }
+
+        .asset-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Improved Scrollable Lightbox Overlay */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.98);
+            z-index: 100;
+            overflow-y: auto; 
+            cursor: zoom-out;
+            padding: 4rem 2rem;
+        }
+
+        #lightbox-content {
+            width: 100%;
+            max-width: 1200px; 
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: default;
+        }
+
+        #lightbox-image {
+            width: 100%;
+            height: auto; 
+            max-height: none; 
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border: 1px solid #334155;
+        }
+
+        /* Expandable Card Logic */
+        .asset-box {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .card-header {
+            cursor: pointer;
+            padding: 1.5rem;
+        }
+
+        .asset-box:hover {
+            border-color: #475569;
+        }
+
+        .expand-content {
+            max-height: 0;
+            opacity: 0;
+            padding: 0 1.5rem;
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+
+        .asset-box.expanded .expand-content {
+            max-height: 2000px;
+            opacity: 1;
+            padding-bottom: 1.5rem;
+            pointer-events: auto;
+        }
+
+        .chevron { transition: transform 0.3s ease; }
+        .asset-box.expanded .chevron { transform: rotate(180deg); }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .sidebar h1, .sidebar p, .nav-link span, .nav-group-label { display: none; }
+            .main-content { margin-left: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Lightbox -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <div id="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightbox-image" src="" alt="Full Resolution View" onerror="this.style.display='none'; document.getElementById('lightbox-label').style.display='block';">
+            <span id="lightbox-label" class="text-2xl font-bold font-mono text-indigo-400 py-20" style="display:none;"></span>
+            <div class="mt-8 text-slate-500 font-mono text-xs uppercase tracking-widest">Click background to close</div>
+        </div>
+    </div>
+
+    <aside class="sidebar py-8">
+        <div class="px-8 mb-4">
+            <h1 class="text-xl font-bold text-white tracking-tight">Finding Fern 2</h1>
+            <p class="text-xs text-indigo-400 font-mono mt-1">MASTER_GUIDE_V8</p>
+        </div>
+        <nav>
+            <div class="nav-group-label">Living World</div>
+            <a href="#characters" class="nav-link active"><span>Characters</span></a>
+            <a href="#environment" class="nav-link"><span>Environment</span></a>
+            <div class="nav-group-label">Physical Assets</div>
+            <a href="#props" class="nav-link"><span>Prop Art</span></a>
+            <div class="nav-group-label">Interface</div>
+            <a href="#ui-art" class="nav-link"><span>UI Art</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        
+        <!-- Character Art Section -->
+        <section id="characters" class="mb-32">
+            <h2 class="text-4xl font-bold text-white mb-2">Character Art</h2>
+            <p class="text-indigo-400 font-mono text-sm mb-8 uppercase tracking-widest">Individual Pipeline</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Row 1 -->
+                <div class="asset-box rounded-xl border-t-4 border-t-indigo-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Skye</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_SKYE</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/6xsG3ea.jpeg')">
+                            <img src="https://i.imgur.com/6xsG3ea.jpeg">
+                        </div>
+                        <div class="space-y-3 text-[11px] font-mono border-t border-slate-700 pt-4">
+                            <div class="flex justify-between"><span>Max Tris:</span><span class="text-white">20k</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-emerald-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Brook</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_BROOK</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/Dv2becX.jpeg')">
+                            <img src="https://i.imgur.com/Dv2becX.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-red-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Fern</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_FERN</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/JIR7ewP.jpeg')">
+                            <img src="https://i.imgur.com/JIR7ewP.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="asset-box rounded-xl border-t-4 border-t-indigo-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Ember</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_EMBER</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/LEIUmxf.jpeg')">
+                            <img src="https://i.imgur.com/LEIUmxf.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-emerald-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Wiz Kid</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_WIZKID</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/NQpiBEG.jpeg')">
+                            <img src="https://i.imgur.com/NQpiBEG.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-red-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Momo</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_MOMO</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/3yJg8SV.jpeg')">
+                            <img src="https://i.imgur.com/3yJg8SV.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="asset-box rounded-xl border-t-4 border-t-indigo-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Ren</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_REN</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/9qgm2F5.jpeg')">
+                            <img src="https://i.imgur.com/9qgm2F5.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-emerald-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Eva</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_EVA</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/mcfupPF.jpeg')">
+                            <img src="https://i.imgur.com/mcfupPF.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-red-500">
+                    <div class="card-header flex justify-between items-start" onclick="toggleCard(this)">
+                        <div>
+                            <h4 class="font-bold text-white">Snark</h4>
+                            <p class="text-[10px] text-slate-500 font-mono">ID: CH_SNARK</p>
+                        </div>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/Pe4GpN4.jpeg')">
+                            <img src="https://i.imgur.com/Pe4GpN4.jpeg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Environment Art Section -->
+        <section id="environment" class="mb-32">
+            <h2 class="text-4xl font-bold text-white mb-8">Environment Art</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Forest Biome -->
+                <div class="asset-box rounded-xl border-l-4 border-l-emerald-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">01. Forest Biome</h4>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Main Concept</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/35tYc65.png')">
+                                    <img src="https://i.imgur.com/35tYc65.png">
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Breakdown</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/sgRsYjS.png')">
+                                    <img src="https://i.imgur.com/sgRsYjS.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ice Peak -->
+                <div class="asset-box rounded-xl border-l-4 border-l-sky-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">02. Pine Forest</h4>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Main Concept</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/Hf8hqb6.png')">
+                                    <img src="https://i.imgur.com/Hf8hqb6.png">
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Breakdown</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/4UZv8Fh.png')">
+                                    <img src="https://i.imgur.com/4UZv8Fh.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ancient Ruins -->
+                <div class="asset-box rounded-xl border-l-4 border-l-amber-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">03. City Environment</h4>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Main Concept</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/gabhrEd.png')">
+                                    <img src="https://i.imgur.com/gabhrEd.png">
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Breakdown</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/ROoKfAk.png')">
+                                    <img src="https://i.imgur.com/ROoKfAk.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shadow Realm -->
+                <div class="asset-box rounded-xl border-l-4 border-l-purple-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">04. Steam City</h4>
+                        <svg class="chevron w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Main Concept</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/T1sjPL9.png')">
+                                    <img src="https://i.imgur.com/T1sjPL9.png">
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-mono mb-2 uppercase tracking-tighter">Breakdown</p>
+                                <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/egLvClZ.png')">
+                                    <img src="https://i.imgur.com/egLvClZ.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prop Art Section -->
+        <section id="props" class="mb-32">
+            <h2 class="text-4xl font-bold text-white mb-8">Prop Art</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="asset-box rounded-xl">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">Melee Weapons</h4>
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/x9kuUeR.jpeg')">
+                            <img src="https://i.imgur.com/x9kuUeR.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">Potions & Consumables</h4>
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/aKMM70M.jpeg')">
+                            <img src="https://i.imgur.com/aKMM70M.jpeg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">Environmental Interactives</h4>
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/0wvvD8a.jpeg')">
+                            <img src="https://i.imgur.com/0wvvD8a.jpeg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UI Art Section -->
+        <section id="ui-art" class="mb-32">
+            <h2 class="text-4xl font-bold text-white mb-8">UI Art</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="asset-box rounded-xl border-t-4 border-t-amber-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">Combat HUD</h4>
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/XJirD9W.png')">
+                            <img src="https://i.imgur.com/XJirD9W.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-indigo-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">Menu Navigation</h4>
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/XJirD9W.png')">
+                            <img src="https://i.imgur.com/XJirD9W.png">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-box rounded-xl border-t-4 border-t-emerald-500">
+                    <div class="card-header flex justify-between items-center" onclick="toggleCard(this)">
+                        <h4 class="font-bold">Icon Library</h4>
+                        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="expand-content">
+                        <div class="asset-image-container" onclick="openLightbox('https://i.imgur.com/XJirD9W.png')">
+                            <img src="https://i.imgur.com/XJirD9W.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function toggleCard(header) {
+            header.parentElement.classList.toggle('expanded');
+        }
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxLabel = document.getElementById('lightbox-label');
+        const lightboxImage = document.getElementById('lightbox-image');
+
+        function openLightbox(source) {
+            lightbox.style.display = 'block'; 
+            document.body.style.overflow = 'hidden'; 
+            
+            if (source.startsWith('http')) {
+                lightboxImage.src = source;
+                lightboxImage.style.display = 'block';
+                lightboxLabel.style.display = 'none';
+            } else {
+                lightboxImage.style.display = 'none';
+                lightboxLabel.innerText = source;
+                lightboxLabel.style.display = 'block';
+            }
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+            lightboxImage.src = '';
+            document.body.style.overflow = 'auto'; 
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

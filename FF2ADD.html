@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finding Fern 2 | Audio Design Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+        }
+        .status-badge {
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            display: inline-block;
+            min-width: 90px;
+            text-align: center;
+        }
+        .prop-badge {
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+        }
+        .status-todo { background: #334155; color: #94a3b8; }
+        .status-progress { background: #92400e; color: #fcd34d; }
+        .status-complete { background: #065f46; color: #34d399; }
+        
+        #file-input { display: none; }
+
+        input[type="text"], select, textarea {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .character-block {
+            border-left: 2px solid #10b981;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .collapsible-content {
+            display: block;
+        }
+        .collapsible-content.collapsed {
+            display: none;
+        }
+        .chevron {
+            transition: transform 0.2s ease;
+        }
+        .collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <input type="file" id="file-input" accept=".txt,.json" onchange="handleFileSelect(event)">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-8">
+            <div>
+                <h1 class="text-4xl font-extrabold text-emerald-400 tracking-tight">Finding Fern 2</h1>
+                <p class="text-slate-400 mt-2 text-lg font-medium tracking-tight">Audio Design Document & Technical Manifest</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="document.getElementById('file-input').click()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg transition text-sm">Upload Manifest</button>
+                <button onclick="exportJSON()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg transition text-sm">Download Manifest</button>
+                <button id="save-btn" onclick="saveData()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg transition text-sm font-bold shadow-lg shadow-emerald-900/20">Save Session</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Sidebar: Technical Info -->
+            <aside class="space-y-6 md:col-span-1">
+                <section class="glass-card p-6">
+                    <h3 class="text-emerald-400 font-bold mb-4 uppercase text-xs tracking-widest">Global Specs</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold uppercase mb-1">Software Stack</label>
+                            <select id="tech-software" onchange="updateTech()">
+                                <option value="FMOD Studio">FMOD Studio</option>
+                                <option value="Wwise">Audiokinetic Wwise</option>
+                                <option value="Unity Native">Unity Native</option>
+                                <option value="Unreal Engine / MetaSound">Unreal / MetaSound</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold uppercase mb-1">Source Libraries</label>
+                            <textarea id="tech-libraries" rows="3" placeholder="e.g. Boom Library, Splice, Custom Field Recordings" onchange="updateTech()"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold uppercase mb-1">File Format</label>
+                            <input type="text" id="tech-format" placeholder="48kHz / 24-bit .wav" onchange="updateTech()">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-500 font-bold uppercase mb-1">Max Peak</label>
+                                <input type="text" id="tech-db" placeholder="-1.0 dB" onchange="updateTech()">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 font-bold uppercase mb-1">Loudness</label>
+                                <input type="text" id="tech-lufs" placeholder="-23 LUFS" onchange="updateTech()">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="glass-card p-4 text-[10px] text-slate-400 space-y-2 leading-relaxed">
+                    <p class="font-bold text-slate-500 uppercase tracking-tighter">Instructions</p>
+                    <p>• Click <span class="text-blue-400 font-bold">CH</span> to toggle Mono/Stereo.</p>
+                    <p>• Click <span class="text-purple-400 font-bold">DG</span> to toggle Diegetic.</p>
+                    <p>• Click headers to collapse/expand sections.</p>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="md:col-span-3 space-y-6">
+                <!-- Character Manifest Section -->
+                <section class="glass-card p-6 overflow-hidden">
+                    <div class="collapsible-header flex justify-between items-center mb-2" onclick="toggleSection('character-section')">
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300 chevron" id="character-section-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            <h2 class="text-xl font-bold text-emerald-300">Character Audio</h2>
+                        </div>
+                        <button onclick="event.stopPropagation(); addCharacter()" class="text-emerald-400 hover:text-emerald-300 text-[10px] font-bold uppercase tracking-widest">+ New Character</button>
+                    </div>
+                    <div id="character-section-content" class="collapsible-content pt-4 border-t border-slate-700/50">
+                        <div id="characters-root" class="space-y-8">
+                            <!-- Characters injected here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Standard Asset Lists -->
+                <div id="manifests-root" class="space-y-6">
+                    <!-- Data will be loaded here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const defaultData = {
+            tech: {
+                software: "FMOD Studio",
+                libraries: "Boom Library: Seasons, Custom Field Recordings",
+                format: "48kHz / 24-bit .wav",
+                db: "-1.0 dBFS",
+                lufs: "-23 LUFS"
+            },
+            ui_state: {
+                collapsed: []
+            },
+            characters: [
+                {
+                    id: 100,
+                    name: "Fern",
+                    vibe: "Organic",
+                    sounds: [
+                        { id: 101, name: "VOX_Effort_Jump", desc: "Short grunt", status: "COMPLETE", channels: "MONO", diegetic: "DIEGETIC" },
+                        { id: 102, name: "VOX_Line_FindingYou", desc: "Key narrative line", status: "TODO", channels: "MONO", diegetic: "DIEGETIC" }
+                    ]
+                }
+            ],
+            music: [{ id: 1, name: "MUS_Forest_Explore_Base", desc: "ATMOSPHERIC PAD", status: "COMPLETE", channels: "STEREO", diegetic: "NON-DIEGETIC" }],
+            sfx: [{ id: 2, name: "FS_Grass_Walk", desc: "FOOTSTEPS", status: "TODO", channels: "MONO", diegetic: "DIEGETIC" }],
+            foley: [{ id: 4, name: "FOL_Cloth_Rustle_Heavy", desc: "CHARACTER CLOTHING", status: "TODO", channels: "MONO", diegetic: "DIEGETIC" }],
+            ui: [{ id: 3, name: "UI_Menu_Hover", desc: "CLICK", status: "COMPLETE", channels: "STEREO", diegetic: "NON-DIEGETIC" }]
+        };
+
+        let manifests = {};
+
+        function loadData() {
+            const saved = localStorage.getItem('finding_fern_audio_data');
+            manifests = saved ? JSON.parse(saved) : defaultData;
+            
+            if (!manifests.tech) manifests.tech = defaultData.tech;
+            if (!manifests.ui_state) manifests.ui_state = { collapsed: [] };
+            if (!manifests.characters) manifests.characters = defaultData.characters;
+            
+            fillTechInputs();
+            renderCharacters();
+            renderManifests();
+            applyCollapses();
+        }
+
+        function toggleSection(id) {
+            const content = document.getElementById(id + '-content');
+            const chevron = document.getElementById(id + '-chevron');
+            const isCollapsed = content.classList.toggle('collapsed');
+            chevron.style.transform = isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+            
+            if (isCollapsed) {
+                if (!manifests.ui_state.collapsed.includes(id)) manifests.ui_state.collapsed.push(id);
+            } else {
+                manifests.ui_state.collapsed = manifests.ui_state.collapsed.filter(cid => cid !== id);
+            }
+            saveData();
+        }
+
+        function applyCollapses() {
+            (manifests.ui_state.collapsed || []).forEach(id => {
+                const content = document.getElementById(id + '-content');
+                const chevron = document.getElementById(id + '-chevron');
+                if (content) content.classList.add('collapsed');
+                if (chevron) chevron.style.transform = 'rotate(-90deg)';
+            });
+        }
+
+        function fillTechInputs() {
+            document.getElementById('tech-software').value = manifests.tech.software || "";
+            document.getElementById('tech-libraries').value = manifests.tech.libraries || "";
+            document.getElementById('tech-format').value = manifests.tech.format || "";
+            document.getElementById('tech-db').value = manifests.tech.db || "";
+            document.getElementById('tech-lufs').value = manifests.tech.lufs || "";
+        }
+
+        function updateTech() {
+            manifests.tech = {
+                software: document.getElementById('tech-software').value,
+                libraries: document.getElementById('tech-libraries').value,
+                format: document.getElementById('tech-format').value,
+                db: document.getElementById('tech-db').value,
+                lufs: document.getElementById('tech-lufs').value
+            };
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('finding_fern_audio_data', JSON.stringify(manifests));
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "Sync Complete";
+            setTimeout(() => btn.innerText = "Save Session", 2000);
+        }
+
+        function renderCharacters() {
+            const root = document.getElementById('characters-root');
+            root.innerHTML = '';
+            const statusClasses = { "TODO": "status-todo", "IN PROGRESS": "status-progress", "COMPLETE": "status-complete" };
+            const vibes = ["Organic", "Mechanical", "Dark", "Light", "Ethereal", "Distorted", "Hybrid"];
+
+            manifests.characters.forEach(char => {
+                const charDiv = document.createElement('div');
+                charDiv.className = 'character-block';
+                
+                let soundsHtml = '';
+                char.sounds.forEach(asset => {
+                    soundsHtml += `
+                        <div class="flex items-center justify-between bg-slate-800/30 p-2 rounded-lg mb-2 border border-slate-700/30 group">
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-bold text-xs text-slate-300">${asset.name}</span>
+                                    <span onclick="toggleCharProp(${char.id}, ${asset.id}, 'channels')" class="prop-badge text-blue-400 bg-blue-400/10 border-blue-400/20">${asset.channels}</span>
+                                    <span onclick="toggleCharProp(${char.id}, ${asset.id}, 'diegetic')" class="prop-badge text-purple-400 bg-purple-400/10 border-purple-400/20">${asset.diegetic}</span>
+                                </div>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-tighter">${asset.desc}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span onclick="toggleCharStatus(${char.id}, ${asset.id})" class="status-badge ${statusClasses[asset.status]}">${asset.status}</span>
+                                <button onclick="removeCharSound(${char.id}, ${asset.id})" class="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            </div>
+                        </div>`;
+                });
+
+                let vibeOptions = vibes.map(v => `<option value="${v}" ${char.vibe === v ? 'selected' : ''}>${v}</option>`).join('');
+
+                charDiv.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+                        <div class="flex items-center gap-4">
+                            <h3 class="text-md font-bold text-white">${char.name}</h3>
+                            <div class="flex items-center gap-2">
+                                <label class="text-[9px] text-slate-500 uppercase font-bold">Theme:</label>
+                                <select onchange="updateCharVibe(${char.id}, this.value)" class="!w-auto !py-0.5 !text-[10px] font-bold text-emerald-400 border-emerald-900/30">
+                                    ${vibeOptions}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="addCharSound(${char.id})" class="text-emerald-500 hover:text-emerald-400 text-[10px] uppercase font-bold tracking-tighter">+ Add Sound</button>
+                            <button onclick="removeCharacter(${char.id})" class="text-red-900 hover:text-red-600 text-[10px] uppercase font-bold tracking-tighter">Delete</button>
+                        </div>
+                    </div>
+                    <div>${soundsHtml}</div>
+                `;
+                root.appendChild(charDiv);
+            });
+        }
+
+        function renderManifests() {
+            const root = document.getElementById('manifests-root');
+            root.innerHTML = '';
+            const categories = [
+                { key: 'music', title: 'Music Assets' },
+                { key: 'sfx', title: 'Ambient & SFX' },
+                { key: 'foley', title: 'Global Foley Elements' },
+                { key: 'ui', title: 'UI & Feedback' }
+            ];
+            const statusClasses = { "TODO": "status-todo", "IN PROGRESS": "status-progress", "COMPLETE": "status-complete" };
+
+            categories.forEach(cat => {
+                const section = document.createElement('section');
+                section.className = 'glass-card p-6 overflow-hidden';
+                section.id = `${cat.key}-section`;
+                
+                let html = `
+                    <div class="collapsible-header flex justify-between items-center mb-2" onclick="toggleSection('${cat.key}-section')">
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300 chevron" id="${cat.key}-section-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            <h2 class="text-xl font-bold text-emerald-300">${cat.title}</h2>
+                        </div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">${(manifests[cat.key] || []).length} Entries</span>
+                    </div>
+                    <div id="${cat.key}-section-content" class="collapsible-content pt-4 border-t border-slate-700/50">
+                        <div class="space-y-3">`;
+
+                (manifests[cat.key] || []).forEach(asset => {
+                    html += `
+                        <div class="flex items-center justify-between bg-slate-800/40 p-3 rounded-lg border border-slate-700/50 hover:bg-slate-800 transition group">
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-bold text-sm text-slate-200">${asset.name}</span>
+                                    <span onclick="toggleProp('${cat.key}', ${asset.id}, 'channels')" class="prop-badge text-blue-400 bg-blue-400/10 border-blue-400/20">${asset.channels}</span>
+                                    <span onclick="toggleProp('${cat.key}', ${asset.id}, 'diegetic')" class="prop-badge text-purple-400 bg-purple-400/10 border-purple-400/20">${asset.diegetic}</span>
+                                </div>
+                                <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">${asset.desc}</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span onclick="toggleStatus('${cat.key}', ${asset.id})" class="status-badge ${statusClasses[asset.status]}">${asset.status}</span>
+                                <button onclick="removeAsset('${cat.key}', ${asset.id})" class="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            </div>
+                        </div>`;
+                });
+
+                html += `</div><button onclick="addAssetPrompt('${cat.key}')" class="mt-4 w-full border border-dashed border-slate-700 p-2 rounded-lg text-slate-500 hover:border-emerald-500/50 hover:text-emerald-400 transition text-[10px] font-bold uppercase tracking-widest">+ New ${cat.key} Requirement</button></div>`;
+                section.innerHTML = html;
+                root.appendChild(section);
+            });
+            applyCollapses();
+        }
+
+        // Logic Helpers
+        window.addCharacter = () => {
+            const name = prompt("Enter Character Name:");
+            if (!name) return;
+            manifests.characters.push({ id: Date.now(), name, vibe: "Organic", sounds: [] });
+            renderCharacters();
+            saveData();
+        };
+
+        window.updateCharVibe = (charId, vibe) => {
+            const char = manifests.characters.find(c => c.id === charId);
+            char.vibe = vibe;
+            saveData();
+        };
+
+        window.removeCharacter = (id) => {
+            if(confirm("Delete this character and all their sounds?")) {
+                manifests.characters = manifests.characters.filter(c => c.id !== id);
+                renderCharacters();
+                saveData();
+            }
+        };
+
+        window.addCharSound = (charId) => {
+            const char = manifests.characters.find(c => c.id === charId);
+            const name = prompt("Sound Key (e.g. VOX_Pain):");
+            if (!name) return;
+            char.sounds.push({
+                id: Date.now(),
+                name: name.toUpperCase(),
+                desc: (prompt("Purpose/Desc:") || "VOCAL").toUpperCase(),
+                status: "TODO",
+                channels: "MONO",
+                diegetic: "DIEGETIC"
+            });
+            renderCharacters();
+            saveData();
+        };
+
+        window.removeCharSound = (charId, soundId) => {
+            const char = manifests.characters.find(c => c.id === charId);
+            char.sounds = char.sounds.filter(s => s.id !== soundId);
+            renderCharacters();
+            saveData();
+        };
+
+        window.toggleCharStatus = (charId, soundId) => {
+            const char = manifests.characters.find(c => c.id === charId);
+            const sound = char.sounds.find(s => s.id === soundId);
+            const cycle = ["TODO", "IN PROGRESS", "COMPLETE"];
+            sound.status = cycle[(cycle.indexOf(sound.status) + 1) % cycle.length];
+            renderCharacters();
+            saveData();
+        };
+
+        window.toggleCharProp = (charId, soundId, prop) => {
+            const char = manifests.characters.find(c => c.id === charId);
+            const sound = char.sounds.find(s => s.id === soundId);
+            if (prop === 'channels') sound.channels = sound.channels === "STEREO" ? "MONO" : "STEREO";
+            else sound.diegetic = sound.diegetic === "NON-DIEGETIC" ? "DIEGETIC" : "NON-DIEGETIC";
+            renderCharacters();
+            saveData();
+        };
+
+        window.toggleStatus = function(cat, id) {
+            const asset = manifests[cat].find(a => a.id === id);
+            const cycle = ["TODO", "IN PROGRESS", "COMPLETE"];
+            asset.status = cycle[(cycle.indexOf(asset.status) + 1) % cycle.length];
+            renderManifests();
+            saveData();
+        };
+
+        window.toggleProp = function(cat, id, prop) {
+            const asset = manifests[cat].find(a => a.id === id);
+            if (prop === 'channels') asset.channels = asset.channels === "STEREO" ? "MONO" : "STEREO";
+            else asset.diegetic = asset.diegetic === "NON-DIEGETIC" ? "DIEGETIC" : "NON-DIEGETIC";
+            renderManifests();
+            saveData();
+        };
+
+        window.removeAsset = function(cat, id) {
+            if(confirm("Delete this entry?")) {
+                manifests[cat] = manifests[cat].filter(a => a.id !== id);
+                renderManifests();
+                saveData();
+            }
+        };
+
+        window.addAssetPrompt = function(cat) {
+            const name = prompt(`Entry Name:`);
+            if (!name) return;
+            manifests[cat].push({ id: Date.now(), name: name.toUpperCase(), desc: (prompt(`Desc:`) || "NEW").toUpperCase(), status: "TODO", channels: "MONO", diegetic: "DIEGETIC" });
+            renderManifests();
+            saveData();
+        };
+
+        window.exportJSON = function() {
+            const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(manifests, null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "finding_fern_2_manifest.txt");
+            dl.click();
+        };
+
+        window.handleFileSelect = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    manifests = JSON.parse(e.target.result);
+                    if (!manifests.tech) manifests.tech = defaultData.tech;
+                    if (!manifests.characters) manifests.characters = [];
+                    if (!manifests.ui_state) manifests.ui_state = { collapsed: [] };
+                    fillTechInputs();
+                    renderCharacters();
+                    renderManifests();
+                    saveData();
+                } catch (err) { alert("Invalid File."); }
+            };
+            reader.readAsText(file);
+        };
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
